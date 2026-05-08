@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import anime from 'animejs';
 import client from '../api/client';
 import ModelCard from '../components/ModelCard';
-import { useStaggerFadeUp, useCountUp } from '../hooks/useAnime';
 
 const Home = () => {
   // Fetch live stats
@@ -25,33 +23,10 @@ const Home = () => {
     }
   });
 
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    anime({
-      targets: '.hero-heading',
-      opacity: [0, 1],
-      translateY: [20, 0],
-      duration: 800,
-      easing: 'easeOutExpo'
-    });
-
-    anime({
-      targets: '.hero-buttons',
-      opacity: [0, 1],
-      duration: 800,
-      delay: 200,
-      easing: 'easeOutExpo'
-    });
-  }, []);
-
-  useCountUp('.stat-number', null, [statsData]);
-  useStaggerFadeUp('.model-card', [modelsData]);
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Section 1: Hero */}
-      <section className="text-center mb-16">
+      <section className="text-center mb-16 animate-fade-up">
         <h1 className="hero-heading font-display text-4xl md:text-5xl lg:text-6xl font-bold text-text mb-6">
           Find the Right LLM for Your <span className="text-primary">Use Case</span>
         </h1>
@@ -111,7 +86,7 @@ const Home = () => {
           </Link>
         </div>
         
-        <div className="models-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="models-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-stagger">
           {isLoadingModels ? (
             // Skeleton loaders
             Array.from({ length: 6 }).map((_, i) => (
