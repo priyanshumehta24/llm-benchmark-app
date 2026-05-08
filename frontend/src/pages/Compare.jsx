@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import anime from 'animejs';
 import {
   BarChart,
   Bar,
@@ -54,6 +55,19 @@ const Compare = () => {
     setSelectedModels(selectedModels.filter(m => m.id !== idToRemove));
     setCompareData(null); // Clear comparison when models change
   };
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (compareData && !isComparing) {
+      anime.set('.compare-charts', { opacity: 0 });
+      anime({
+        targets: '.compare-charts',
+        opacity: [0, 1],
+        duration: 800,
+        easing: 'easeOutExpo'
+      });
+    }
+  }, [compareData, isComparing]);
 
   const handleCompare = async () => {
     if (selectedModels.length < 2) return;

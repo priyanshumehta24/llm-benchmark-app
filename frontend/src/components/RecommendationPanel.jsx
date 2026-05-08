@@ -1,7 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import anime from 'animejs';
 import BenchmarkBar from './BenchmarkBar';
 
 const RecommendationPanel = ({ recommendations = [], detectedCategory, weightsUsed = {} }) => {
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!recommendations.length) return;
+
+    const elements = document.querySelectorAll('.recommendation-item');
+    if (!elements.length) return;
+    
+    anime.set(elements, { opacity: 0, translateX: 30 });
+
+    anime({
+      targets: elements,
+      opacity: [0, 1],
+      translateX: [30, 0],
+      duration: 800,
+      delay: anime.stagger(80),
+      easing: 'easeOutExpo'
+    });
+  }, [recommendations]);
+
   if (!recommendations.length) return null;
 
   return (

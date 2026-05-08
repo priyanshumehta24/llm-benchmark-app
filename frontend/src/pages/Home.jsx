@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import anime from 'animejs';
 import client from '../api/client';
 import ModelCard from '../components/ModelCard';
+import { useStaggerFadeUp, useCountUp } from '../hooks/useAnime';
 
 const Home = () => {
   // Fetch live stats
@@ -22,6 +24,29 @@ const Home = () => {
       return response.data;
     }
   });
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    anime({
+      targets: '.hero-heading',
+      opacity: [0, 1],
+      translateY: [20, 0],
+      duration: 800,
+      easing: 'easeOutExpo'
+    });
+
+    anime({
+      targets: '.hero-buttons',
+      opacity: [0, 1],
+      duration: 800,
+      delay: 200,
+      easing: 'easeOutExpo'
+    });
+  }, []);
+
+  useCountUp('.stat-number', null, [statsData]);
+  useStaggerFadeUp('.model-card', [modelsData]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
