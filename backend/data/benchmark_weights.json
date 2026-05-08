@@ -1,0 +1,37 @@
+{
+  "coding": {
+    "HumanEval": 0.35,
+    "SWE-Bench": 0.30,
+    "MMLU": 0.10,
+    "GSM8K": 0.15,
+    "HellaSwag": 0.10
+  },
+  "math_reasoning": {
+    "GSM8K": 0.40,
+    "MATH": 0.35,
+    "MMLU": 0.15,
+    "ARC": 0.10
+  },
+  "general_qa": {
+    "MMLU": 0.35,
+    "TruthfulQA": 0.25,
+    "HellaSwag": 0.20,
+    "Winogrande": 0.20
+  },
+  "document_analysis": {
+    "MMLU": 0.30,
+    "TruthfulQA": 0.30,
+    "HellaSwag": 0.25,
+    "ARC": 0.15
+  },
+  "creative_writing": {
+    "Chatbot Arena Elo": 0.50,
+    "TruthfulQA": 0.25,
+    "HellaSwag": 0.25
+  },
+  "science_research": {
+    "GPQA": 0.40,
+    "MMLU": 0.35,
+    "ARC": 0.25
+  }
+}
