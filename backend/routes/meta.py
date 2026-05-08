@@ -36,7 +36,7 @@ class TriggerUpdateResponse(BaseModel):
 # --- Static Use Case Info ---
 USE_CASE_STATIC = [
     {
-        "id": "coding",
+        "id": "code_generation",
         "label": "Code Generation & Review",
         "description": "Writing, debugging, and reviewing code",
         "icon": "code"

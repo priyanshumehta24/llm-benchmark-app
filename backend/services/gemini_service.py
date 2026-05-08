@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 # ── Constants ──────────────────────────────────────────────────────────────────
 
 SUPPORTED_CATEGORIES: list[str] = [
-    "coding",
+    "code_generation",
     "math_reasoning",
     "general_qa",
     "document_analysis",
@@ -50,12 +50,14 @@ You are a task classifier for a Large Language Model recommendation system.
 Given a user's description of what they need an LLM for, classify it into
 EXACTLY ONE of the following categories:
 
-  - coding            → software development, code generation, debugging, scripts
+  - code_generation   → software development, code generation, debugging, scripts
   - math_reasoning    → mathematics, calculations, proofs, numerical reasoning
   - general_qa        → general questions, factual lookups, conversation, summaries
   - document_analysis → reading, extracting, analysing or summarising documents
   - creative_writing  → stories, essays, poems, marketing copy, creative content
   - science_research  → scientific questions, research papers, technical analysis
+
+If the user types the exact name of a category (e.g. "Code Generation & Review", "Math & Reasoning"), map it to the corresponding category ID.
 
 Rules:
   1. Reply with ONLY a valid JSON object — no markdown, no extra text.
@@ -64,7 +66,7 @@ Rules:
   4. "confidence" must be a float between 0.0 and 1.0.
 
 Example output:
-{"category": "coding", "confidence": 0.95}
+{"category": "code_generation", "confidence": 0.95}
 """
 
 
@@ -84,11 +86,26 @@ def classify_use_case(text: str) -> str:
     Returns
     -------
     str
-        One of: coding | math_reasoning | general_qa |
+        One of: code_generation | math_reasoning | general_qa |
                 document_analysis | creative_writing | science_research
 
         Falls back silently to "general_qa" on any error.
     """
+    
+    # Fast exact match for frontend dropdown labels
+    text_lower = text.strip().lower()
+    exact_matches = {
+        "code generation & review": "code_generation",
+        "math & reasoning": "math_reasoning",
+        "general q&a assistant": "general_qa",
+        "document analysis & summarization": "document_analysis",
+        "creative writing & content": "creative_writing",
+        "science & research": "science_research"
+    }
+    for label, cat in exact_matches.items():
+        if text_lower == label or text_lower == cat:
+            return cat
+            
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         logger.warning(

@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 _WEIGHTS_PATH = Path(__file__).resolve().parent.parent / "data" / "benchmark_weights.json"
 
 VALID_USE_CASES = {
-    "coding",
+    "code_generation",
     "math_reasoning",
     "general_qa",
     "document_analysis",
@@ -234,6 +234,12 @@ def rank_models(
 
     # Sort descending — highest final_score first
     results.sort(key=lambda x: x["final_score"], reverse=True)
+
+    # Make scores relative to top model (highest scorer = 100%, others proportionally lower)
+    if results and results[0]["final_score"] > 0:
+        max_score = results[0]["final_score"]
+        for res in results:
+            res["final_score"] = round(res["final_score"] / max_score, 6)
 
     logger.info(
         "rank_models: ranked %d models for use_case=%r. Top: %s (%.4f)",

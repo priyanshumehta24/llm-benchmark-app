@@ -1,5 +1,5 @@
 {
-  "coding": {
+  "code_generation": {
     "HumanEval": 0.35,
     "SWE-Bench": 0.30,
     "MMLU": 0.10,
