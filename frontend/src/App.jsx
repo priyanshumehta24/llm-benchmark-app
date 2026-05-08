@@ -1,17 +1,16 @@
 import { Routes, Route } from 'react-router-dom';
-
-const Home = () => <div className="p-8 text-center"><h2 className="font-display text-2xl text-primary">Home</h2><p className="text-text-muted mt-2">Routing active.</p></div>;
-const Compare = () => <div className="p-8 text-center"><h2 className="font-display text-2xl text-violet">Compare</h2></div>;
-const Recommend = () => <div className="p-8 text-center"><h2 className="font-display text-2xl text-amber">Recommend</h2></div>;
-const Methodology = () => <div className="p-8 text-center"><h2 className="font-display text-2xl text-success">Methodology</h2></div>;
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Compare from './pages/Compare';
+import Recommend from './pages/Recommend';
+import Methodology from './pages/Methodology';
 
 function App() {
   return (
-    <div className="min-h-screen bg-bg text-text font-body">
-      <header className="border-b border-border bg-surface p-4 flex gap-4">
-        <h1 className="font-display text-primary text-xl font-bold">LLM Benchmark Analyzer</h1>
-      </header>
-      <main>
+    <div className="min-h-screen bg-bg text-text font-body flex flex-col">
+      <Navbar />
+      
+      <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/compare" element={<Compare />} />
@@ -19,6 +18,14 @@ function App() {
           <Route path="/methodology" element={<Methodology />} />
         </Routes>
       </main>
+      
+      <footer className="border-t border-border bg-surface py-6 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <p className="text-text-faint text-sm">
+            Data auto-refreshes every 24h &middot; Built with public benchmarks
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
