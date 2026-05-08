@@ -1,200 +1,120 @@
-import { useEffect, useRef } from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import client from '../api/client';
+import ModelCard from '../components/ModelCard';
 
-const MODELS = [
-  { name: 'GPT-5',          family: 'GPT',    provider: 'OpenAI',    open: false },
-  { name: 'Claude 4',       family: 'Claude', provider: 'Anthropic', open: false },
-  { name: 'Gemini 2.5 Pro', family: 'Gemini', provider: 'Google',    open: false },
-  { name: 'Llama 4',        family: 'Llama',  provider: 'Meta',      open: true  },
-  { name: 'DeepSeek V3',    family: 'DS',     provider: 'DeepSeek',  open: true  },
-  { name: 'Mistral Large',  family: 'Ms',     provider: 'Mistral',   open: false },
-]
+const Home = () => {
+  // Fetch live stats
+  const { data: statsData, isLoading: isLoadingStats } = useQuery({
+    queryKey: ['lastUpdated'],
+    queryFn: async () => {
+      const response = await client.get('/api/last-updated');
+      return response.data;
+    }
+  });
 
-const STATS = [
-  { value: '9',   label: 'Models Tracked' },
-  { value: '10+', label: 'Benchmarks' },
-  { value: '6',   label: 'Use Cases' },
-  { value: '24h', label: 'Auto-Update' },
-]
-
-export default function Home() {
-  const heroRef = useRef(null)
-
-  useEffect(() => {
-    // Stagger animation on mount
-    const cards = heroRef.current?.querySelectorAll('.stat-card')
-    cards?.forEach((card, i) => {
-      card.style.animationDelay = `${i * 80}ms`
-      card.classList.add('animate-fade-up')
-    })
-  }, [])
+  // Fetch top models grid
+  const { data: modelsData, isLoading: isLoadingModels } = useQuery({
+    queryKey: ['models'],
+    queryFn: async () => {
+      const response = await client.get('/api/models');
+      return response.data;
+    }
+  });
 
   return (
-    <main style={{ flex: 1, padding: '3rem 2rem', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
-
-      {/* ── Hero ── */}
-      <section style={{ textAlign: 'center', paddingBottom: '4rem', animation: 'fadeSlideUp 0.6s ease forwards' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <span className="badge badge-cyan">↑ Updated every 24 hours</span>
-        </div>
-
-        <h1 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(2.2rem, 5vw, 3.8rem)',
-          fontWeight: '700',
-          letterSpacing: '-0.03em',
-          lineHeight: '1.1',
-          marginBottom: '1.25rem',
-        }}>
-          Find the best LLM
-          <br />
-          <span className="gradient-text">for your exact use case</span>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Section 1: Hero */}
+      <section className="text-center mb-16">
+        <h1 className="hero-heading font-display text-4xl md:text-5xl lg:text-6xl font-bold text-text mb-6">
+          Find the Right LLM for Your <span className="text-primary">Use Case</span>
         </h1>
-
-        <p style={{
-          fontSize: '1.1rem',
-          color: 'var(--color-text-muted)',
-          maxWidth: '560px',
-          margin: '0 auto 2rem',
-          lineHeight: '1.7',
-        }}>
-          Aggregated benchmark scores for GPT-5, Claude 4, Gemini 2.5 Pro, Llama 4 and more —
-          with AI-powered recommendations tailored to your workflow.
+        <p className="text-xl text-text-muted mb-10 max-w-2xl mx-auto">
+          Powered by public benchmarks. Updated daily.
         </p>
-
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="/recommend" className="btn-primary">
-            ✦ Get a Recommendation
-          </a>
-          <a href="/compare" className="btn-ghost">
-            Compare Models →
-          </a>
+        <div className="hero-buttons flex flex-col sm:flex-row justify-center gap-4">
+          <Link 
+            to="/recommend" 
+            className="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-bg bg-primary hover:bg-primary-hover transition-colors"
+          >
+            Get Recommendation &rarr;
+          </Link>
+          <Link 
+            to="/compare" 
+            className="inline-flex justify-center items-center px-6 py-3 border border-border text-base font-medium rounded-md text-text bg-surface-2 hover:bg-surface-offset transition-colors"
+          >
+            Compare Models
+          </Link>
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section ref={heroRef} style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-        gap: '1rem',
-        marginBottom: '4rem',
-      }}>
-        {STATS.map(({ value, label }) => (
-          <div key={label} className="card stat-card" style={{ textAlign: 'center', opacity: 0 }}>
-            <div style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '2rem',
-              fontWeight: '700',
-              color: 'var(--color-primary)',
-              marginBottom: '0.25rem',
-            }}>{value}</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>{label}</div>
-          </div>
-        ))}
-      </section>
-
-      {/* ── Models Grid ── */}
-      <section>
-        <h2 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '1.4rem',
-          fontWeight: '600',
-          marginBottom: '1.5rem',
-          color: 'var(--color-text)',
-        }}>
-          Tracked Models
-        </h2>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-          gap: '1rem',
-        }}>
-          {MODELS.map((model) => (
-            <div key={model.name} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {/* Avatar + name */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div style={{
-                  width: '40px', height: '40px',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'linear-gradient(135deg, var(--color-surface-offset), var(--color-surface-2))',
-                  border: '1px solid var(--color-border)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: '700',
-                  fontSize: '0.8rem',
-                  color: 'var(--color-primary)',
-                }}>
-                  {model.family.slice(0, 2).toUpperCase()}
-                </div>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontWeight: '600', fontSize: '0.95rem' }}>
-                    {model.name}
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-                    {model.provider}
-                  </div>
-                </div>
-              </div>
-
-              {/* Badges */}
-              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                <span className={`badge badge-${model.open ? 'green' : 'violet'}`}>
-                  {model.open ? '🔓 Open Source' : '🔒 Closed'}
-                </span>
-              </div>
-
-              {/* Placeholder score bar — animated in Phase 7 */}
-              <div style={{
-                height: '4px',
-                borderRadius: 'var(--radius-full)',
-                background: 'var(--color-surface-offset)',
-                overflow: 'hidden',
-              }}>
-                <div style={{
-                  height: '100%',
-                  width: `${60 + Math.random() * 35}%`,
-                  background: 'linear-gradient(90deg, var(--color-primary), var(--color-violet))',
-                  borderRadius: 'var(--radius-full)',
-                  transition: 'width 0.8s ease',
-                }} />
-              </div>
+      {/* Section 2: Live Stats Bar */}
+      <section className="bg-surface border border-border rounded-lg p-6 mb-16 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-divider">
+          <div className="pt-4 md:pt-0">
+            <div className="text-sm font-medium text-text-faint uppercase tracking-wider mb-1">Total Models</div>
+            <div className="stat-number text-4xl font-bold font-mono text-primary">
+              {isLoadingStats ? '-' : statsData?.models_count || 0}
             </div>
-          ))}
+          </div>
+          <div className="pt-4 md:pt-0">
+            <div className="text-sm font-medium text-text-faint uppercase tracking-wider mb-1">Total Benchmarks</div>
+            <div className="stat-number text-4xl font-bold font-mono text-violet">
+              {isLoadingStats ? '-' : statsData?.scores_count || 0}
+            </div>
+          </div>
+          <div className="pt-4 md:pt-0">
+            <div className="text-sm font-medium text-text-faint uppercase tracking-wider mb-1">Last Updated</div>
+            <div className="text-lg font-medium text-text mt-2">
+              {isLoadingStats 
+                ? 'Loading...' 
+                : statsData?.last_updated 
+                  ? new Date(statsData.last_updated).toLocaleDateString() 
+                  : 'N/A'}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── Use-case CTA ── */}
-      <section style={{
-        marginTop: '4rem',
-        padding: '2.5rem',
-        background: 'var(--color-surface)',
-        borderRadius: 'var(--radius-xl)',
-        border: '1px solid var(--color-border)',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        {/* Decorative glow */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.06) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-
-        <h2 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '1.6rem',
-          fontWeight: '700',
-          marginBottom: '0.75rem',
-        }}>
-          Not sure which model to use?
-        </h2>
-        <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', maxWidth: '480px', margin: '0 auto 1.5rem' }}>
-          Describe your task in plain English and our scoring engine will rank models by suitability.
-        </p>
-        <a href="/recommend" className="btn-primary">Try the Recommendation Engine →</a>
+      {/* Section 3: Top Models Grid */}
+      <section>
+        <div className="flex justify-between items-end mb-8">
+          <h2 className="text-2xl font-display font-bold text-text">Top Models</h2>
+          <Link to="/compare" className="text-sm text-primary hover:text-primary-hover transition-colors">
+            View all models &rarr;
+          </Link>
+        </div>
+        
+        <div className="models-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {isLoadingModels ? (
+            // Skeleton loaders
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-surface border border-border rounded-lg p-5 h-[260px] animate-pulse flex flex-col">
+                <div className="flex justify-between mb-4">
+                  <div className="h-6 bg-surface-2 rounded w-1/2"></div>
+                  <div className="h-5 bg-surface-2 rounded w-1/4"></div>
+                </div>
+                <div className="mt-auto space-y-4">
+                  <div className="h-3 bg-surface-2 rounded w-full"></div>
+                  <div className="h-3 bg-surface-2 rounded w-5/6"></div>
+                  <div className="h-3 bg-surface-2 rounded w-4/6"></div>
+                </div>
+              </div>
+            ))
+          ) : modelsData && modelsData.length > 0 ? (
+            modelsData.map(model => (
+              <ModelCard key={model.id} model={model} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12 text-text-muted">
+              No models found. Please ensure the backend is running and seeded.
+            </div>
+          )}
+        </div>
       </section>
+    </div>
+  );
+};
 
-    </main>
-  )
-}
+export default Home;
