@@ -1,108 +1,91 @@
-import { Link, useLocation } from 'react-router-dom'
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 
-const NAV_LINKS = [
-  { path: '/',             label: 'Home' },
-  { path: '/compare',      label: 'Compare' },
-  { path: '/recommend',    label: 'Recommend' },
-  { path: '/methodology',  label: 'Methodology' },
-]
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-export default function Navbar() {
-  const { pathname } = useLocation()
+  const links = [
+    { name: 'Home', path: '/' },
+    { name: 'Compare', path: '/compare' },
+    { name: 'Recommend', path: '/recommend' },
+    { name: 'Methodology', path: '/methodology' },
+  ];
 
   return (
-    <nav style={{
-      background: 'var(--color-surface)',
-      borderBottom: '1px solid var(--color-border)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-      backdropFilter: 'blur(12px)',
-    }}>
-      <div style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        padding: '0 2rem',
-        height: '64px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        {/* Wordmark */}
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{
-            width: '28px', height: '28px',
-            background: 'linear-gradient(135deg, var(--color-primary), var(--color-violet))',
-            borderRadius: 'var(--radius-sm)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px', fontWeight: '700', color: '#0d0f1a',
-          }}>⚡</span>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: '700',
-            fontSize: '1.1rem',
-            color: 'var(--color-text)',
-            letterSpacing: '-0.02em',
-          }}>
-            LLM<span style={{ color: 'var(--color-primary)' }}>Bench</span>
-          </span>
-        </Link>
-
-        {/* Nav links */}
-        <div style={{ display: 'flex', gap: '0.25rem' }}>
-          {NAV_LINKS.map(({ path, label }) => {
-            const isActive = pathname === path
-            return (
-              <Link
-                key={path}
-                to={path}
-                style={{
-                  padding: '0.4rem 0.9rem',
-                  borderRadius: 'var(--radius-md)',
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: '500',
-                  fontSize: '0.9rem',
-                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                  background: isActive ? 'var(--color-primary-highlight)' : 'transparent',
-                  border: isActive ? '1px solid rgba(0,212,255,0.25)' : '1px solid transparent',
-                  transition: 'all 0.2s ease',
-                  textDecoration: 'none',
-                }}
-                onMouseEnter={e => {
-                  if (!isActive) {
-                    e.currentTarget.style.color = 'var(--color-text)'
-                    e.currentTarget.style.background = 'var(--color-surface-offset)'
+    <nav className="bg-surface border-b border-border sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <span className="font-display font-bold text-xl text-text">
+                LLM <span className="text-primary">Bench</span>
+              </span>
+            </div>
+          </div>
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4">
+              {links.map((link) => (
+                <NavLink
+                  key={link.name}
+                  to={link.path}
+                  className={({ isActive }) =>
+                    `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-surface-2 text-primary'
+                        : 'text-text-muted hover:bg-surface-offset hover:text-text'
+                    }`
                   }
-                }}
-                onMouseLeave={e => {
-                  if (!isActive) {
-                    e.currentTarget.style.color = 'var(--color-text-muted)'
-                    e.currentTarget.style.background = 'transparent'
-                  }
-                }}
-              >
-                {label}
-              </Link>
-            )
-          })}
-        </div>
-
-        {/* Status pill */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '0.4rem',
-          padding: '0.3rem 0.75rem',
-          background: 'var(--color-success-highlight)',
-          border: '1px solid rgba(74,222,128,0.25)',
-          borderRadius: 'var(--radius-full)',
-          fontSize: '0.75rem',
-          fontFamily: 'var(--font-display)',
-          fontWeight: '500',
-          color: 'var(--color-success)',
-        }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-success)', animation: 'pulseGlow 2s infinite' }} />
-          Live
+                >
+                  {link.name}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+          <div className="-mr-2 flex md:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-text-muted hover:text-text hover:bg-surface-offset focus:outline-none"
+            >
+              <span className="sr-only">Open main menu</span>
+              {isOpen ? (
+                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-surface border-b border-border">
+            {links.map((link) => (
+              <NavLink
+                key={link.name}
+                to={link.path}
+                onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-base font-medium ${
+                    isActive
+                      ? 'bg-surface-2 text-primary'
+                      : 'text-text-muted hover:bg-surface-offset hover:text-text'
+                  }`
+                }
+              >
+                {link.name}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
-  )
-}
+  );
+};
+
+export default Navbar;
